@@ -27,7 +27,7 @@ class Curve
   # ax + by = gcd(a, b)
   # where a and b are given.
   @ext_gcd: (a, b) ->
-    if b == 0
+    if b is 0
       [1, 0]
     else
       r = Curve.mod a, b
@@ -61,9 +61,9 @@ class Curve
     y1 = a.y
     y2 = b.y
 
-    return new Ecc.Point Infinity, Infinity if x1 == x2 and y1 == -y2
+    return new Ecc.Point Infinity, Infinity if x1 is x2 and y1 is -y2
 
-    if x1 == x2 and y1 == y2
+    if x1 is x2 and y1 is y2
       lambda = @mod_inv 3 * Math.pow(x1, 2) + @a, 2 * y1
     else
       lambda = @mod_inv y2 - y1, x2 - x1
@@ -80,7 +80,7 @@ class Curve
     r = new Ecc.Point Infinity, Infinity
 
     while n > 0
-      if n % 2 == 1
+      if n % 2 is 1
         r = @mod_add r, q
 
       q = @mod_add q, q
