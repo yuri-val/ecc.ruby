@@ -1,1 +1,2 @@
-Elliptic curve cryptographic functions in coffee script. LGPL v3
+Implementation of several crypto algorithms: diffie hellman + elliptic curve, el gamel + elliptic curve, discrete logarithm
+LGPL v3

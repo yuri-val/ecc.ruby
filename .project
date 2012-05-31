@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>ecc.coffee</name>
+	<name>ecc.ruby</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -12,7 +12,7 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>com.aptana.projects.webnature</nature>
 		<nature>com.aptana.ruby.core.rubynature</nature>
+		<nature>com.aptana.projects.webnature</nature>
 	</natures>
 </projectDescription>
