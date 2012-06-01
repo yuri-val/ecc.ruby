@@ -11,6 +11,14 @@ module Ecc
       @fn     = Log.eiler n
     end
     
+    def self.pow_mod (a, b, n)
+      if b > 0
+        a ** b % n
+      else
+        (a ** -b % n) ** (Log.eiler(n) - 1) % n
+      end
+    end
+    
     def baby_step_giant_step
       unless Log.is_prime @n and self.is_generator @a
         puts "n is not prime or a is not a generator"
@@ -18,11 +26,11 @@ module Ecc
       end
       
       h = Math.sqrt(@n).floor() + 1
-      c = (@a ** h) % @n
+      c = Log.pow_mod @a, h, @n
       
       list_1 = []
       for i in (1..h)
-        list_1.push((c ** i) % @n)
+        list_1.push Log.pow_mod(c, i, @n)
       end
       
       for j in (1..h)
@@ -35,6 +43,18 @@ module Ecc
       nil
     end
     
+    # algorithm of Gauss
+    def chinese_remainder_theorem (num, remainders)
+      x = 0
+      for remainder in remainders
+        y = num / remainder[1]
+        s = Log.pow_mod y, -1, remainder[1]
+        c = remainder[0] * s % remainder[1]
+        x += c * y % num
+      end
+      x
+    end
+    
     def polig_hellman
       unless Log.is_prime @n and self.is_generator @a
         puts "n is not prime or a is not a generator"
@@ -42,6 +62,28 @@ module Ecc
       end
       
       factors = Log.factor @n - 1
+      remainders = []
+      for factor in factors
+        q     = factor[0]
+        alpha = factor[1]
+        num   = q ** alpha
+        
+        c = Log.pow_mod @a, (@n - 1) / q, @n
+        
+        list = [1]
+        for i in (1...q)
+          list.push Log.pow_mod(c, i, @n)
+        end
+        
+        remainder = 0
+        for i in (0...alpha)
+          x = Log.pow_mod @b * Log.pow_mod(@a, - remainder, @n), (@n - 1) / (q ** (i + 1)), @n
+          x = list.index x
+          remainder += x * Log.pow_mod(q, i, @n)
+        end
+        remainders.push [remainder, num]
+      end
+      chinese_remainder_theorem @n - 1, remainders
     end
       
     def brute
@@ -58,7 +100,7 @@ module Ecc
     def is_generator (a)
       factors = Log.factor @n - 1
       for factor in factors
-        if (a ** ((@n - 1) / factor[0])) % @n == 1
+        if Log.pow_mod(a, (@n - 1) / factor[0], @n) == 1
           return false
         end
       end

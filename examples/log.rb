@@ -20,9 +20,16 @@ puts log.random_generator
 # baby-step giant-step algorithm. answer - 982
 puts Ecc::Log.new(2341, 1, 983).baby_step_giant_step
 
-# generate example in Zp
+# generate example in Zp to solve via baby_step_giant_step algorithm
 log = Ecc::Log.new(nil, nil, 104729)
 log.a = log.random_generator
 log.b = rand(log.n - 1).floor
 puts "a = " + log.a.to_s + ", b = " + log.b.to_s + ", n = " + log.n.to_s
-puts "solution = " + log.baby_step_giant_step.to_s
+puts "solution = " + log.baby_step_giant_step().to_s
+
+# generate example in Zp to solve via polig_hellman algorithm
+log = Ecc::Log.new(nil, nil, 104729)
+log.a = log.random_generator
+log.b = rand(log.n - 1).floor
+puts "a = " + log.a.to_s + ", b = " + log.b.to_s + ", n = " + log.n.to_s
+puts "solution = " + log.polig_hellman().to_s
