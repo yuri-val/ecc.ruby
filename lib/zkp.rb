@@ -1,4 +1,4 @@
-require_relative "curve.rb"
+require "./lib/curve.rb"
 
 module Ecc
   class ZKP
@@ -13,9 +13,28 @@ module Ecc
       @pointQ    = pointQ
     end
 
+    def send_to(sub, data = {})
+      data.each do |key, val|
+        eval "sub.#{key.to_s} = val"
+      end
+    end
+
     def set_secret_ka(_k1 = nil, _k2 = nil)
       @_k1 = _k1.nil? ? rand(1..self._n - 1) : _k1
       @_k2 = _k2.nil? ? rand(1..self._n - 1) : _k2
+    end
+
+    def set_secret_kb(_kb = nil)
+      @_kb = _kb.nil? ? rand(1..self._n - 1) : _kb
+    end
+
+    def set_random_r(_r1 = nil, _r2 = nil)
+      @_r1 = _r1.nil? ? rand(1..self._n - 1) : _r1
+      @_r2 = _r2.nil? ? rand(1..self._n - 1) : _r2
+    end
+
+    def generate_rand_x(_x)
+      @_x = _x.nil? ? rand(1..self._n - 1) : _x
     end
 
     def calculate_Ya
@@ -24,15 +43,70 @@ module Ecc
       @_Ya = @curve.mod_add k1G, k2Q
     end
 
-
-    # Computes the public key for the given private key
-    def computePublicKey
-      @curve.mod_mult @point, @pri_key
+    def calculate_Yb
+      @_Yb = @curve.mod_mult(@curve.mod_add(@pointG, @pointQ), @_kb)
     end
 
-    # Computes the shared secret given a public key
-    def computeSharedSecret (pub_key)
-      @curve.mod_mult pub_key, @pri_key
+    def calculate_y
+      r1G = @curve.mod_mult @pointG, @_r1
+      r2Q = @curve.mod_mult @pointQ, @_r2
+      @_y = @curve.mod_add r1G, r2Q
     end
+
+    def calculate_ys
+      @_y1 = @curve.mod_mult @_Yb, (@_r1 + (@_x * @_k1))
+      @_y2 = @curve.mod_mult @_Yb, (@_r2 + (@_x * @_k2))
+      @_y3 = @curve.mod_add(
+              @curve.mod_mult(@pointQ, (@_r1 + (@_x * @_k1))),
+              @curve.mod_mult(@pointG, (@_r2 + (@_x * @_k2))))
+    end
+
+    def run_check
+      p1 = @curve.mod_add @_y1, @_y2
+      p2 = pow__1(@_kb, @curve.fp)
+      p @_kb, p2
+      p3 = @curve.mod_mult p1, p2
+      p4 = @curve.mod_sub p3, @_y3
+      p5 = @curve.mod_mult @_Ya, @_x
+      @curve.mod_sub p4, p5
+    end
+
+    def pow__1(n, m)
+      powmod(n, f_euler_rec(m) - 1, m)
+    end
+
+    def powmod(a, k, n)
+      b = 1;
+      while k > 0 do
+        if k % 2 == 0
+          k = k / 2
+          a = (a * a) % n
+        else
+          k = k - 1
+          b = (b * a) % n
+        end
+      end
+      b
+    end
+
+    def f_euler_rec(n)
+      m = 1;
+      (2..n/2).each do |i|
+        if (n % i == 0)
+          n = n / i;
+          while n % i == 0 do
+            m = m * i;
+            n = n / i;
+          end
+          if n==1
+            return m*(i-1)
+          else
+            return m*(i-1)*f_euler_rec(n)
+          end
+        end
+      end
+      return n-1;
+    end
+
   end
 end

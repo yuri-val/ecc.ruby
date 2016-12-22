@@ -1,8 +1,8 @@
-require_relative "point"
+require "./lib/point"
 
 module Ecc
   class Curve
-
+    attr_reader   :fp
     # Creates an elliptic curve of the form
     #
     # y^2 = x^3 + ax + b
