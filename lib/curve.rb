@@ -32,15 +32,25 @@ module Ecc
     # ax + by = gcd(a, b)
     # where a and b are given.
     def self.ext_gcd (a, b)
-      if b == 0
-        [1, 0]
-      else
-        r = Curve.mod a, b
-        q = (a - r) / b
-        res = Curve.ext_gcd b, r
-        t = res[1]
-        [t, res[0] - (q * t)]
+      lx = 0; ly = 1; x  = 1; y  = 0;
+
+      while(b != 0)
+          r = mod(a, b);
+          q = (a - r) / b;
+          tmpx = x;
+          tmpy = y;
+
+          x = lx - (q*x);
+          lx = tmpx;
+
+          y = ly - (q*y);
+          ly = tmpy;
+
+          a = b;
+          b = r;
       end
+
+      return [ly, lx];
     end
 
     # Computes the solution to equations of the form

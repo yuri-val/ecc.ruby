@@ -63,50 +63,12 @@ module Ecc
 
     def run_check
       p1 = @curve.mod_add @_y1, @_y2
-      p2 = pow__1(@_kb, @curve.fp)
+      p2 = @curve.mod_inv(1, @_kb)
       p @_kb, p2
       p3 = @curve.mod_mult p1, p2
       p4 = @curve.mod_sub p3, @_y3
       p5 = @curve.mod_mult @_Ya, @_x
       @curve.mod_sub p4, p5
     end
-
-    def pow__1(n, m)
-      powmod(n, f_euler_rec(m) - 1, m)
-    end
-
-    def powmod(a, k, n)
-      b = 1;
-      while k > 0 do
-        if k % 2 == 0
-          k = k / 2
-          a = (a * a) % n
-        else
-          k = k - 1
-          b = (b * a) % n
-        end
-      end
-      b
-    end
-
-    def f_euler_rec(n)
-      m = 1;
-      (2..n/2).each do |i|
-        if (n % i == 0)
-          n = n / i;
-          while n % i == 0 do
-            m = m * i;
-            n = n / i;
-          end
-          if n==1
-            return m*(i-1)
-          else
-            return m*(i-1)*f_euler_rec(n)
-          end
-        end
-      end
-      return n-1;
-    end
-
   end
 end
