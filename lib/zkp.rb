@@ -9,8 +9,23 @@ module Ecc
 
     def initialize(curve, pointG, pointQ)
       @curve    = curve
-      @pointG    = pointG
-      @pointQ    = pointQ
+      @pointG   = pointG
+      @pointQ   = pointQ
+      @_n       = point_count
+    end
+
+    def point_count
+      count = 1
+      cur_point = Point.new(pointG.x, pointG.y)
+      @curve.fp.times do |k|
+        begin
+          np_point = @curve.mod_mult cur_point, k + 1
+          count += 1
+        rescue ZeroDivisionError
+          return count
+        end
+      end
+      count
     end
 
     def send_to(sub, data = {})
@@ -63,7 +78,7 @@ module Ecc
 
     def run_check
       p1 = @curve.mod_add @_y1, @_y2
-      p2 = @curve.mod_inv(1, @_kb)
+      p2 = @curve.mod_inv(1, @_kb, @_n)
       p @_kb, p2
       p3 = @curve.mod_mult p1, p2
       p4 = @curve.mod_sub p3, @_y3

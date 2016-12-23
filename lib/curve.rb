@@ -56,12 +56,13 @@ module Ecc
     # Computes the solution to equations of the form
     # a/b = x (mod p)
     # where a, b are given and p = Fp
-    def mod_inv (a, b)
-      res = Curve.ext_gcd b, @fp
+    def mod_inv (a, b, base = nil)
+      base = base.nil? ? @fp : base
+      res = Curve.ext_gcd b, base
       dis = res[1]
-      x   = (a - (@fp * dis * a)) / b
+      x   = (a - (base * dis * a)) / b
 
-      Curve.mod x, @fp
+      Curve.mod x, base
     end
 
     # Subtracts two points on the curve
