@@ -79,7 +79,6 @@ module Ecc
     def run_check
       p1 = @curve.mod_add @_y1, @_y2
       p2 = @curve.mod_inv(1, @_kb, @_n)
-      p @_kb, p2
       p3 = @curve.mod_mult p1, p2
       p4 = @curve.mod_sub p3, @_y3
       p5 = @curve.mod_mult @_Ya, @_x

@@ -47,4 +47,4 @@ puts "y1 = (#{alice._y1.x} ,#{alice._y1.y})"
 puts "y2 = (#{alice._y2.x} ,#{alice._y2.y})"
 puts "y3 = (#{alice._y3.x} ,#{alice._y3.y})"
 
-p bob.run_check
+puts bob.run_check ? "Successful" : "Fail"
