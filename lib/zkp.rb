@@ -83,7 +83,8 @@ module Ecc
       p3 = @curve.mod_mult p1, p2
       p4 = @curve.mod_sub p3, @_y3
       p5 = @curve.mod_mult @_Ya, @_x
-      @curve.mod_sub p4, p5
+      res = @curve.mod_sub p4, p5
+      res == @_y
     end
   end
 end
